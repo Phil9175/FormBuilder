@@ -107,20 +107,6 @@ jQuery(function($) {
     autocomplete: ['access']
   };
 
-  var typeUserAttrs = {
-    text: {
-      className: {
-        label: 'Class',
-        options: {
-          'red form-control': 'Red',
-          'green form-control': 'Green',
-          'blue form-control': 'Blue'
-        },
-        style: 'border: 1px solid red'
-      }
-    }
-  };
-
   // test disabledAttrs
   var disabledAttrs = ['placeholder'];
 
@@ -144,7 +130,6 @@ jQuery(function($) {
     templates: templates,
     inputSets: inputSets,
     typeUserDisabledAttrs: typeUserDisabledAttrs,
-    typeUserAttrs: typeUserAttrs,
     disableInjectedStyle: false,
     actionButtons: actionButtons,
     disableFields: ['autocomplete'],

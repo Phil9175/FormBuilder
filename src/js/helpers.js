@@ -131,6 +131,65 @@ export default class Helpers {
 
     return options
   }
+  
+    /**
+   * Get option data for a field
+   * @param  {Object} field jQuery field object
+   * @return {Array}        Array of option values
+   */
+  fieldOptionDataAppears(field) {
+    let options = []
+    const $options = $('.sortable-options-appear li', field)
+
+    $options.each(i => {
+      let $option = $($options[i])
+      const selected = $('.option-selected', $option).is(':checked')
+      let attrs = {
+        idOne: $('.option-idOne', $option).val(),
+        condition: $('.option-condition', $option).val(),
+        value: $('.option-value', $option).val(),
+        
+      }
+
+      if (selected) {
+        attrs.selected = selected
+      }
+
+      options.push(attrs)
+    })
+
+    return options
+  }
+  
+   /**
+   * Get option data for a field
+   * @param  {Object} field jQuery field object
+   * @return {Array}        Array of option values
+   */
+  fieldOptionDatajsEvent(field) {
+    let options = []
+    const $options = $('.sortable-options-jsEvent li', field)
+
+    $options.each(i => {
+      let $option = $($options[i])
+      const selected = $('.option-selected', $option).is(':checked')
+      let attrs = {
+        action: $('.option-action', $option).val(),
+        fonction: $('.option-fonction', $option).val(),
+      }
+
+      if (selected) {
+        attrs.selected = selected
+      }
+
+      options.push(attrs)
+    })
+
+    return options
+  }
+
+
+
 
   /**
    * XML save
@@ -230,6 +289,17 @@ export default class Helpers {
           if (multipleField) {
             fieldData.values = _this.fieldOptionData($field)
           }
+          fieldData.valuesAppear = _this.fieldOptionDataAppears($field)
+          fieldData.jsEvent = _this.fieldOptionDatajsEvent($field)
+          
+          if (!fieldData.appear_condition){
+	          fieldData.appear_condition = false
+          }
+          
+          if (!fieldData.column){
+	          fieldData.column = null
+          }
+
 
           formData.push(fieldData)
         }

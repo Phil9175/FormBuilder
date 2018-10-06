@@ -25,7 +25,7 @@ export default class control {
     }
 
     // process config - extract standard properties
-    let properties = ['label', 'description', 'subtype', 'required','disabled']
+    let properties = ['label', 'description', 'subtype', 'required', 'disabled', 'appear_condition', 'appear_options']
     for (let prop of properties) {
       this[prop] = config[prop]
       delete config[prop]

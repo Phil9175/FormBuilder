@@ -385,7 +385,8 @@ const FormBuilder = function(opts, element) {
       }
 
       return optionData
-    }
+    }    
+    
 
     if (!values || !values.length) {
       let defaultOptCount = [1, 2, 3]
@@ -416,16 +417,124 @@ const FormBuilder = function(opts, element) {
 
     return m('div', fieldOptions, { className: 'form-group field-options' }).outerHTML
   }
+  
+  /**
+   * Add data for field with options [select, checkbox-group, radio-group]
+   *
+   * @param  {Object} fieldData
+   * @return {String} field options markup
+   */
+  let fieldOptionsAppear = function(fieldData) {
+    let { type, values, name } = fieldData
+    let optionActions = [m('a', i18n.addOption, { className: 'add add-appear' })]
+    let fieldOptionsAppear = [m('label', i18n.selectOptions, { className: 'false-label' })]
+    const isMultiple = true || type === 'checkbox-group'
+    const optionDataTemplateAppear = idOne => {
+      let optionDataAppear = {
+	    selected: false,
+        idOne,
+        condition : '',
+        value : '',
+      }
+
+      return optionDataAppear
+    }
+
+    if (!values || !values.length) {
+      let defaultOptCount = [1]
+      if (utils.inArray(type, ['checkbox-group', 'checkbox'])) {
+        defaultOptCount = [1]
+      }
+      values = defaultOptCount.map(function(index) {
+        let idOne = `${i18n.option} ${index}`
+        return optionDataTemplateAppear(idOne)
+      })
+
+      let firstOption = values[0]
+      if (firstOption.hasOwnProperty('selected') && type !== 'radio-group') {
+        firstOption.selected = false
+      }
+    } else {
+      // ensure option data is has all required keys
+      values.forEach(option => Object.assign({}, { selected: false }, option))
+    }
+
+    const optionActionsWrap = m('div', optionActions, { className: 'option-actions' })
+    const options = m('ol', values.map(option => selectFieldOptionsAppear(name, option, isMultiple)), {
+      className: 'sortable-options-appear',
+    })
+    const optionsWrap = m('div', [options, optionActionsWrap], { className: 'sortable-options-wrap' })
+
+    fieldOptionsAppear.push(optionsWrap)
+
+    return m('div', fieldOptionsAppear, { className: 'form-group field-options' }).outerHTML
+  }
+  
+  
+  
+  /**
+   * Add data for field with options [select, checkbox-group, radio-group]
+   *
+   * @param  {Object} fieldData
+   * @return {String} field options markup
+   */
+  let fieldOptionsjsEvent = function(fieldData) {
+    let { type, values, name } = fieldData
+    let optionActions = [m('a', i18n.addOption, { className: 'add add-jsEvent' })]
+    let fieldOptionsjsEvent = [m('label', i18n.selectOptions, { className: 'false-label' })]
+    const isMultiple = true || type === 'checkbox-group'
+    const optionDataTemplatejsEvent = action => {
+      let optionDatajsEvent = {
+	    selected: false,
+        action,
+        fonction: ''
+      }
+
+      return optionDatajsEvent
+    }
+
+    if (!values || !values.length) {
+      let defaultOptCount = [1]
+      if (utils.inArray(type, ['checkbox-group', 'checkbox'])) {
+        defaultOptCount = [1]
+      }
+      values = defaultOptCount.map(function(index) {
+        let action = `${i18n.option} ${index}`
+        return optionDataTemplatejsEvent(action)
+      })
+
+      let firstOption = values[0]
+      if (firstOption.hasOwnProperty('selected') && type !== 'radio-group') {
+        firstOption.selected = false
+      }
+    } else {
+      // ensure option data is has all required keys
+      values.forEach(option => Object.assign({}, { selected: false }, option))
+    }
+
+    const optionActionsWrap = m('div', optionActions, { className: 'option-actions' })
+    const options = m('ol', values.map(option => selectFieldOptionsjsEvent(name, option, isMultiple)), {
+      className: 'sortable-options-jsEvent',
+    })
+    const optionsWrap = m('div', [options, optionActionsWrap], { className: 'sortable-options-wrap' })
+
+    fieldOptionsjsEvent.push(optionsWrap)
+
+    return m('div', fieldOptionsjsEvent, { className: 'form-group field-options' }).outerHTML
+  }
+  
+  
+  
 
   const defaultFieldAttrs = type => {
-    const defaultAttrs = ['required', 'label', 'description', 'placeholder', 'className', 'name', 'access', 'value']
+    const defaultAttrs = ['required', 'label', 'description', 'placeholder', 'className', 'name', 'value', 'appear_condition', 'appear_options', 'column', 'jsEvent']
     let noValFields = ['header', 'paragraph', 'file', 'autocomplete'].concat(d.optionFields)
 
     let valueField = !utils.inArray(type, noValFields)
 
     const typeAttrsMap = {
       autocomplete: defaultAttrs.concat(['options','requireValidOption']),
-      button: ['label', 'subtype', 'style', 'className', 'name', 'value', 'access'],
+      button: ['label', 'subtype', 'style', 'className', 'name', 'value', 'appear_condition', 'appear_options', 'column', 'jsEvent'],
       checkbox: [
         'required',
         'label',
@@ -434,16 +543,19 @@ const FormBuilder = function(opts, element) {
         'inline',
         'className',
         'name',
-        'access',
         'other',
         'options',
+        'appear_condition', 
+        'appear_options',
+        'column',
+        'jsEvent'
       ],
       text: defaultAttrs.concat(['subtype', 'maxlength']),
       date: defaultAttrs,
       file: defaultAttrs.concat(['subtype', 'multiple']),
-      header: ['label', 'subtype', 'className', 'access'],
-      hidden: ['name', 'value', 'access'],
-      paragraph: ['label', 'subtype', 'className', 'access'],
+      header: ['label', 'subtype', 'className', 'appear_condition', 'appear_options', 'column', 'jsEvent'],
+      hidden: ['name', 'value', 'appear_condition', 'appear_options', 'column', 'jsEvent'],
+      paragraph: ['label', 'subtype', 'className', 'appear_condition', 'appear_options', 'column', 'jsEvent'],
       number: defaultAttrs.concat(['min', 'max', 'step']),
       select: defaultAttrs.concat(['multiple', 'options']),
       textarea: defaultAttrs.concat(['subtype', 'maxlength', 'rows']),
@@ -490,6 +602,11 @@ const FormBuilder = function(opts, element) {
 
         return boolAttribute('inline', values, labels)
       },
+      appear_condition: () => boolAttribute('appear_condition', values, { first: i18n.appear_condition }),
+      appear_options: () => fieldOptionsAppear(values),
+      jsEvent: () => fieldOptionsjsEvent(values),
+      column: () => numberAttribute('column', values),
+      
       label: () => textAttribute('label', values),
       description: () => textAttribute('description', values),
       subtype: () => selectAttribute('subtype', values, subtypes[type]),
@@ -500,47 +617,17 @@ const FormBuilder = function(opts, element) {
       name: () => textAttribute('name', values),
       value: () => textAttribute('value', values),
       maxlength: () => numberAttribute('maxlength', values),
-      access: () => {
-        let rolesDisplay = values.role ? 'style="display:block"' : ''
-        let availableRoles = [`<div class="available-roles" ${rolesDisplay}>`]
-        for (key in opts.roles) {
-          if (opts.roles.hasOwnProperty(key)) {
-            let roleId = `fld-${data.lastID}-roles-${key}`
-            let cbAttrs = {
-              type: 'checkbox',
-              name: 'roles[]',
-              value: key,
-              id: roleId,
-              className: 'roles-field',
-            }
-            if (utils.inArray(key, roles)) {
-              cbAttrs.checked = 'checked'
-            }
-
-            availableRoles.push(`<label for="${roleId}">`)
-            availableRoles.push(h.input(cbAttrs).outerHTML)
-            availableRoles.push(` ${opts.roles[key]}</label>`)
-          }
-        }
-        availableRoles.push('</div>')
-        let accessLabels = {
-          first: i18n.roles,
-          second: i18n.limitRole,
-          content: availableRoles.join(''),
-        }
-
-        return boolAttribute('access', values, accessLabels)
-      },
+      
       other: () =>
         boolAttribute('other', values, {
           first: i18n.enableOther,
           second: i18n.enableOtherMsg,
         }),
+        
       options: () => fieldOptions(values),
+      
     }
-    let key
-    let roles = values.role !== undefined ? values.role.split(',') : []
-    let numAttrs = ['min', 'max', 'step']
+      let numAttrs = ['min', 'max', 'step']
 
     if (type === 'number') {
       numAttrs.forEach(numAttr => {
@@ -1060,6 +1147,104 @@ const FormBuilder = function(opts, element) {
 
     return field.outerHTML
   }
+  
+  // Select field html, since there may be multiple
+  let selectFieldOptionsAppear = function(name, optionData, multipleSelect) {
+    let optionInputType = {
+      selected: multipleSelect ? 'checkbox' : 'radio',
+    }
+    
+    // value, label, select
+    let optionDataOrder = ['value', 'condition', 'idOne', 'selected']
+    let optionInputs = []
+    let optionTemplateAppear = { selected: false, idOne: '', condition: '' , value: ''}
+
+    optionData = Object.assign(optionTemplateAppear, optionData)
+	
+    for (let i = optionDataOrder.length - 1; i >= 0; i--) {
+      let prop = optionDataOrder[i]
+      if (optionData.hasOwnProperty(prop)) {
+        let attrs = {
+          type: optionInputType[prop] || 'text',
+          className: 'option-' + prop + ' small',
+          name: name + '-option',
+        }
+
+        attrs.placeholder = i18n[`placeholder.${prop}`] || ''
+
+        if (prop === 'selected') {
+	        if (optionData.selected === true){
+		        attrs.checked = optionData.selected
+	        }
+          attrs.className = 'option-' + prop
+        }
+        optionInputs.push(m('input', null, attrs))
+      }
+    }
+
+    let removeAttrs = {
+      className: 'remove-appear btn',
+      title: i18n.removeMessage,
+    }
+    
+    optionInputs.push(utils.markup('a', i18n.remove, removeAttrs))
+
+    let field = utils.markup('li', optionInputs)
+
+    return field.outerHTML
+  }
+  
+  
+  // Select field html, since there may be multiple
+  let selectFieldOptionsjsEvent = function(name, optionData, multipleSelect) {
+    let optionInputType = {
+      selected: multipleSelect ? 'checkbox' : 'radio',
+    }
+    
+    // value, label, select
+    let optionDataOrder = ['fonction', 'action', 'selected']
+    let optionInputs = []
+    let optionTemplatejsEvent = { selected: false, action: '', fonction: ''}
+
+    optionData = Object.assign(optionTemplatejsEvent, optionData)
+	
+    for (let i = optionDataOrder.length - 1; i >= 0; i--) {
+      let prop = optionDataOrder[i]
+      if (optionData.hasOwnProperty(prop)) {
+        let attrs = {
+          type: optionInputType[prop] || 'text',
+          className: 'option-' + prop,
+          name: name + '-option',
+        }
+
+        attrs.placeholder = i18n[`placeholder.${prop}`] || ''
+
+        if (prop === 'selected') {
+	        if (optionData.selected === true){
+		        attrs.checked = optionData.selected
+	        }
+          attrs.className = 'option-' + prop
+        }
+        optionInputs.push(m('input', null, attrs))
+      }
+    }
+
+    let removeAttrs = {
+      className: 'remove-jsEvent btn',
+      title: i18n.removeMessage,
+    }
+    
+    optionInputs.push(utils.markup('a', i18n.remove, removeAttrs))
+
+    let field = utils.markup('li', optionInputs)
+
+    return field.outerHTML
+  }
+
+
+
+  
+  
 
   let cloneItem = function cloneItem(currentItem) {
     let currentId = currentItem.attr('id')
@@ -1102,7 +1287,7 @@ const FormBuilder = function(opts, element) {
     e.preventDefault()
     let options = field.querySelector('.sortable-options')
     let optionsCount = options.childNodes.length
-    if (optionsCount <= 2 && !type.includes('checkbox')) {
+    if (optionsCount <= 1 && !type.includes('checkbox')) {
       opts.notify.error('Error: ' + i18n.minOptionMessage)
     } else {
       $option.slideUp('250', () => {
@@ -1112,6 +1297,45 @@ const FormBuilder = function(opts, element) {
       })
     }
   })
+  
+   $stage.on('click touchstart', '.remove-appear', e => {
+    let $field = $(e.target).parents('.form-field:eq(0)')
+    let field = $field[0]
+    let type = field.getAttribute('type')
+    let $option = $(e.target.parentElement)
+    e.preventDefault()
+    let options = field.querySelector('.sortable-options-appear')
+    let optionsCount = options.childNodes.length
+    if (optionsCount <= 1 && !type.includes('checkbox')) {
+      opts.notify.error('Error: ' + i18n.minOptionMessage)
+    } else {
+      $option.slideUp('250', () => {
+        $option.remove()
+        h.updatePreview($field)
+        h.save.call(h)
+      })
+    }
+  })
+  
+  $stage.on('click touchstart', '.remove-jsEvent', e => {
+    let $field = $(e.target).parents('.form-field:eq(0)')
+    let field = $field[0]
+    let type = field.getAttribute('type')
+    let $option = $(e.target.parentElement)
+    e.preventDefault()
+    let options = field.querySelector('.sortable-options-jsEvent')
+    let optionsCount = options.childNodes.length
+    if (optionsCount <= 1 && !type.includes('checkbox')) {
+      opts.notify.error('Error: ' + i18n.minOptionMessage)
+    } else {
+      $option.slideUp('250', () => {
+        $option.remove()
+        h.updatePreview($field)
+        h.save.call(h)
+      })
+    }
+  })
+  
 
   // touch focus
   $stage.on('touchstart', 'input', e => {
@@ -1357,6 +1581,47 @@ const FormBuilder = function(opts, element) {
 
     $('.sortable-options', $optionWrap).append(selectFieldOptions(name, false, isMultiple))
   })
+
+  // Attach a callback to add new options
+  $stage.on('click', '.add-appear', function(e) {
+    e.preventDefault()
+    let $optionWrap = $(e.target).closest('.field-options')
+    let $multiple = $('[name="multiple"]', $optionWrap)
+    let $firstOption = $('.option-selected:eq(0)', $optionWrap)
+    let isMultiple = false
+
+    if ($multiple.length) {
+      isMultiple = $multiple.prop('checked')
+    } else {
+      isMultiple = $firstOption.attr('type') === 'checkbox'
+    }
+
+    let name = $firstOption.attr('name')
+
+    $('.sortable-options-appear', $optionWrap).append(selectFieldOptionsAppear(name, false, isMultiple))
+  })
+  
+  // Attach a callback to add new options
+  $stage.on('click', '.add-jsEvent', function(e) {
+    e.preventDefault()
+    let $optionWrap = $(e.target).closest('.field-options')
+    let $multiple = $('[name="multiple"]', $optionWrap)
+    let $firstOption = $('.option-selected:eq(0)', $optionWrap)
+    let isMultiple = false
+
+    if ($multiple.length) {
+      isMultiple = $multiple.prop('checked')
+    } else {
+      isMultiple = $firstOption.attr('type') === 'checkbox'
+    }
+
+    let name = $firstOption.attr('name')
+
+    $('.sortable-options-jsEvent', $optionWrap).append(selectFieldOptionsjsEvent(name, false, isMultiple))
+  })
+
+  
+  
 
   $stage.on('mouseover mouseout', '.remove, .del-button', e =>
     $(e.target)
